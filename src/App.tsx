@@ -232,7 +232,6 @@ function App () {
         <h1> useRef </h1>
         <ReceiveRef ref={TestRef} />
         <button onClick={() => TestRef?.current?.focus()}>Focus</button>
-        <button onClick={() => console.log(TestRef)}>Log Ref</button>
       </div>
 
       <div>
