@@ -53,7 +53,7 @@ function UseTransactionComponent() {
 
 function UseActionStateComponent() {
   const [error, setError] = useState("");
-  const [state, action, isPending] = useActionState(
+  const [state, action, isPending] = useActionState<FormData, FormData>(
     async (previousState: FormData, newState: FormData) => {
 
       const previousName = previousState ? previousState?.get('name') : '';
@@ -76,7 +76,7 @@ function UseActionStateComponent() {
       setError("");
       return newState
     },
-    ""
+    new FormData()
   );
 
   return (
@@ -84,7 +84,7 @@ function UseActionStateComponent() {
       <form action={action}>
         <input name='name' type="text" required />
         <Button/> 
-        <div>state: {state}</div>
+        <div>state: {state?.get('name')?.toString() || ''}</div>
         <div>error: {error}</div>
       </form>
     </div>
@@ -135,7 +135,12 @@ function Button() {
   )
 }
 
-function getName() {
+type UserResponse = {
+  success: boolean;
+  name: string;
+};
+
+function getName(): Promise<UserResponse> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -155,7 +160,7 @@ function UseWithPromise({ userNamePromise }: { userNamePromise: Promise<{success
   )
 }
 
-const ThemeContext = createContext(null);
+const ThemeContext = createContext<string | null>(null);
 
 function UseWithContext({ show }: { show: boolean }) {
   if (!show) {
@@ -168,7 +173,7 @@ function UseWithContext({ show }: { show: boolean }) {
   )
 }
 
-function ReceiveRef({ ref }) {
+function ReceiveRef({ ref }: { ref: React.RefObject<HTMLInputElement | null> }) {
   return <input ref={ref} />
 }
 
@@ -186,7 +191,7 @@ function CleanUpRef() {
 }
 
 function App () {
-  const TestRef = useRef(null)
+  const TestRef = useRef<HTMLInputElement | null>(null)
   const userName = getName();
 
   return (
@@ -213,13 +218,6 @@ function App () {
         </Suspense>
       </div>
 
-      <div>
-        <ThemeContext value="dark">
-          <h1>use with context</h1>
-          <UseWithContext show={true}/>
-          <UseWithContext show={false}/>
-        </ThemeContext>
-      </div>
       <div>
         <ThemeContext.Provider value="dark">
           <h1>use with context</h1>
